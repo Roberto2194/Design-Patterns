@@ -161,72 +161,63 @@ Wikipedia says
 
 Taking our hiring manager example above. First of all we have an interviewer interface and some implementations for it
 
-```php
-interface Interviewer
-{
-    public function askQuestions();
+```java
+interface Interviewer {
+    public void askQuestions();
 }
 
-class Developer implements Interviewer
-{
-    public function askQuestions()
-    {
-        echo 'Asking about design patterns!';
+class Developer implements Interviewer {
+    public void askQuestions() {
+        System.out.println("Asking about design patterns!");
     }
 }
 
-class CommunityExecutive implements Interviewer
-{
-    public function askQuestions()
-    {
-        echo 'Asking about community building';
+class CommunityExecutive implements Interviewer {
+    public void askQuestions() {
+        System.out.println("Asking about community building");
     }
 }
 ```
-
 Now let us create our `HiringManager`
 
-```php
-abstract class HiringManager
-{
-
+```java
+abstract class HiringManager {
     // Factory method
-    abstract protected function makeInterviewer(): Interviewer;
-
-    public function takeInterview()
-    {
-        $interviewer = $this->makeInterviewer();
-        $interviewer->askQuestions();
+    private abstract Interviewer makeInterviewer();
+    
+    public void takeInterview() {
+        Interviewer interviewer = makeInterviewer();
+        interviewer.askQuestions();
     }
 }
-
 ```
 Now any child can extend it and provide the required interviewer
-```php
-class DevelopmentManager extends HiringManager
-{
-    protected function makeInterviewer(): Interviewer
-    {
+
+```java
+class DevelopmentManager extends HiringManager {
+    private Interviewer makeInterviewer() {
         return new Developer();
     }
 }
 
-class MarketingManager extends HiringManager
-{
-    protected function makeInterviewer(): Interviewer
-    {
+class MarketingManager extends HiringManager {
+    private Interviewer makeInterviewer() {
         return new CommunityExecutive();
     }
 }
 ```
 and then it can be used as
 
-```php
-$devManager = new DevelopmentManager();
-$devManager->takeInterview(); // Output: Asking about design patterns
-
-$marketingManager = new MarketingManager();
-$marketingManager->takeInterview(); // Output: Asking about community building.
+```java
+public class Main {
+    public static void main(String[] args) {
+        DevelopmentManager devManager = new DevelopmentManager();
+        devManager.takeInterview(); // Output: Asking about design patterns
+        
+        MarketingManager marketingManager = new MarketingManager();
+        marketingManager.takeInterview(); // Output: Asking about community building.
+    }
+}
 ```
 
 **When to use?**
