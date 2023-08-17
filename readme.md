@@ -167,7 +167,7 @@ class CommunityExecutive implements Interviewer {
     }
 }
 ```
-Now let us create our `HiringManager`
+Whoever wants to create objects of type `Interviewer` is going to extend this class:
 ```java
 abstract class HiringManager {
     // Factory method
@@ -203,7 +203,7 @@ marketingManager.takeInterview(); // Output: Asking about community building.
 ```
 **When to use?**
 
-Useful when there is some generic processing in a class but the required sub-class is dynamically decided at runtime. Or putting it in other words, when the client doesn't know what exact sub-class it might need.
+Note that the implementation of objects of type `Interviewer` is hidden from the client. Client are going to interact only with objects of type `HiringManager`, which in turn are going to create `Interviewer`s.
 
 🔨 Abstract Factory
 ----------------
@@ -221,114 +221,94 @@ Wikipedia says
 
 Translating the door example above. First of all we have our `Door` interface and some implementation for it
 
-```php
-interface Door
-{
-    public function getDescription();
+```java
+interface Door {
+    void getDescription();
 }
 
-class WoodenDoor implements Door
-{
-    public function getDescription()
-    {
-        echo 'I am a wooden door';
+class WoodenDoor implements Door {
+    public void getDescription() {
+        System.out.println("Wooden door");
     }
 }
 
-class IronDoor implements Door
-{
-    public function getDescription()
-    {
-        echo 'I am an iron door';
+class IronDoor implements Door {
+    public void getDescription() {
+        System.out.println("Iron door");
     }
 }
 ```
 Then we have some fitting experts for each door type
-
-```php
-interface DoorFittingExpert
-{
-    public function getDescription();
+```java
+interface DoorFittingExpert {
+    void getDescription();
 }
 
-class Welder implements DoorFittingExpert
-{
-    public function getDescription()
-    {
-        echo 'I can only fit iron doors';
+class Welder implements DoorFittingExpert {
+    public void getDescription() {
+        System.out.println("I can only fit iron doors");
     }
 }
 
-class Carpenter implements DoorFittingExpert
-{
-    public function getDescription()
-    {
-        echo 'I can only fit wooden doors';
+class Carpenter implements DoorFittingExpert {
+    public void getDescription() {
+        System.out.println("I can only fit wooden doors");
     }
 }
 ```
-
 Now we have our abstract factory that would let us make family of related objects i.e. wooden door factory would create a wooden door and wooden door fitting expert and iron door factory would create an iron door and iron door fitting expert
-```php
-interface DoorFactory
-{
-    public function makeDoor(): Door;
-    public function makeFittingExpert(): DoorFittingExpert;
+```java
+interface DoorFactory {
+    Door makeDoor();
+    DoorFittingExpert makeFittingExpert();
 }
 
 // Wooden factory to return carpenter and wooden door
-class WoodenDoorFactory implements DoorFactory
-{
-    public function makeDoor(): Door
-    {
+class WoodenDoorFactory implements DoorFactory {
+    public Door makeDoor() {
         return new WoodenDoor();
     }
 
-    public function makeFittingExpert(): DoorFittingExpert
-    {
+    public DoorFittingExpert makeFittingExpert() {
         return new Carpenter();
     }
 }
 
-// Iron door factory to get iron door and the relevant fitting expert
-class IronDoorFactory implements DoorFactory
-{
-    public function makeDoor(): Door
-    {
+// Iron door factory to return welder and iron door
+class IronDoorFactory implements DoorFactory{
+    public Door makeDoor() {
         return new IronDoor();
     }
 
-    public function makeFittingExpert(): DoorFittingExpert
-    {
+    public DoorFittingExpert makeFittingExpert() {
         return new Welder();
     }
 }
 ```
 And then it can be used as
-```php
-$woodenFactory = new WoodenDoorFactory();
+```java
+// Creating Wooden Doors and Carpenters
+WoodenDoorFactory woodenFactory = new WoodenDoorFactory();
 
-$door = $woodenFactory->makeDoor();
-$expert = $woodenFactory->makeFittingExpert();
+Door woodenDoor = woodenFactory.makeDoor();
+DoorFittingExpert carpenter = woodenFactory.makeFittingExpert();
+woodenDoor.getDescription();  // Output: I am a wooden door
+carpenter.getDescription(); // Output: I can only fit wooden doors
 
-$door->getDescription();  // Output: I am a wooden door
-$expert->getDescription(); // Output: I can only fit wooden doors
+// Creating Welders and Iron Doors
+IronDoorFactory ironFactory = new IronDoorFactory();
 
-// Same for Iron Factory
-$ironFactory = new IronDoorFactory();
-
-$door = $ironFactory->makeDoor();
-$expert = $ironFactory->makeFittingExpert();
-
-$door->getDescription();  // Output: I am an iron door
-$expert->getDescription(); // Output: I can only fit iron doors
+Door ironDoor = ironFactory.makeDoor();
+DoorFittingExpert welder = ironFactory.makeFittingExpert();
+ironDoor.getDescription();  // Output: I am an iron door
+welder.getDescription(); // Output: I can only fit iron doors
 ```
 
-As you can see the wooden door factory has encapsulated the `carpenter` and the `wooden door` also iron door factory has encapsulated the `iron door` and `welder`. And thus it had helped us make sure that for each of the created door, we do not get a wrong fitting expert.   
+The wooden door factory has encapsulated the `carpenter` and the `wooden door`, and the iron door factory has encapsulated the `iron door` and `welder`. And thus it had helped us make sure that for each of the created door, we do not get a wrong fitting expert.   
 
 **When to use?**
 
-When there are interrelated dependencies with not-that-simple creation logic involved
+When there are interrelated dependencies with not-that-simple creation logic involved.
 
 👷 Builder
 --------------------------------------------
