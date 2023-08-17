@@ -699,7 +699,6 @@ Taking our employees example from above. Here we have different employee types
 interface Employee {
     String getName();
     float getSalary();
-    void setSalary(float salary);
 }
 
 class Developer implements Employee {
@@ -718,15 +717,11 @@ class Developer implements Employee {
     public float getSalary() {
         return this.salary;
     }
-
-    public void setSalary(float salary) {
-        this.salary = salary;
-    }
 }
 
 public class Designer implements Employee {
-    protected String name;
-    protected float salary;
+    private String name;
+    private float salary;
 
     public Designer(String name, float salary) {
         this.name = name;
@@ -739,10 +734,6 @@ public class Designer implements Employee {
 
     public float getSalary() {
         return this.salary;
-    }
-
-    public void setSalary(float salary) {
-        this.salary = salary;
     }
 }
 ```
@@ -790,7 +781,7 @@ Real world example
 > Imagine you run a car service shop offering multiple services. Now how do you calculate the bill to be charged? You pick one service and dynamically keep adding to it the prices for the provided services till you get the final cost. Here each type of service is a decorator.
 
 In plain words
-> Decorator pattern lets you dynamically change the behavior of an object at run time by wrapping them in an object of a decorator class.
+> Decorator pattern lets you dynamically change the behavior of an object at run time by wrapping them in an object of a decorator class. It is very similar to the `Builder` pattern, with the difference that we compose the object at run time instead of creation time.
 
 Wikipedia says
 > In object-oriented programming, the decorator pattern is a design pattern that allows behavior to be added to an individual object, either statically or dynamically, without affecting the behavior of other objects from the same class. The decorator pattern is often useful for adhering to the Single Responsibility Principle, as it allows functionality to be divided between classes with unique areas of concern.
@@ -799,107 +790,89 @@ Wikipedia says
 
 Lets take coffee for example. First of all we have a simple coffee implementing the coffee interface
 
-```php
-interface Coffee
-{
-    public function getCost();
-    public function getDescription();
+```java
+interface Coffee {
+    double getCost();
+    String getDescription();
 }
 
-class SimpleCoffee implements Coffee
-{
-    public function getCost()
-    {
+class SimpleCoffee implements Coffee {
+    public double getCost() {
         return 10;
     }
 
-    public function getDescription()
-    {
-        return 'Simple coffee';
+    public String getDescription() {
+        return "Simple coffee";
     }
 }
 ```
 We want to make the code extensible to allow options to modify it if required. Lets make some add-ons (decorators)
-```php
-class MilkCoffee implements Coffee
-{
-    protected $coffee;
-
-    public function __construct(Coffee $coffee)
-    {
-        $this->coffee = $coffee;
+```java
+public class MilkCoffee implements Coffee {
+    private Coffee coffee;
+    
+    public MilkCoffee(Coffee coffee) {
+        this.coffee = coffee;
     }
-
-    public function getCost()
-    {
-        return $this->coffee->getCost() + 2;
+    
+    public double getCost() {
+        return this.coffee.getCost() + 2;
     }
-
-    public function getDescription()
-    {
-        return $this->coffee->getDescription() . ', milk';
+    
+    public String getDescription() {
+        return this.coffee.getDescription() + ", milk";
     }
 }
 
-class WhipCoffee implements Coffee
-{
-    protected $coffee;
-
-    public function __construct(Coffee $coffee)
-    {
-        $this->coffee = $coffee;
+public class WhipCoffee implements Coffee {
+    private Coffee coffee;
+    
+    public WhipCoffee(Coffee coffee) {
+        this.coffee = coffee;
     }
-
-    public function getCost()
-    {
-        return $this->coffee->getCost() + 5;
+    
+    public double getCost() {
+        return this.coffee.getCost() + 5;
     }
-
-    public function getDescription()
-    {
-        return $this->coffee->getDescription() . ', whip';
+    
+    public String getDescription() {
+        return this.coffee.getDescription() + ", whip";
     }
 }
 
-class VanillaCoffee implements Coffee
-{
-    protected $coffee;
-
-    public function __construct(Coffee $coffee)
-    {
-        $this->coffee = $coffee;
+public class VanillaCoffee implements Coffee {
+    private Coffee coffee;
+    
+    public VanillaCoffee(Coffee coffee) {
+        this.coffee = coffee;
     }
-
-    public function getCost()
-    {
-        return $this->coffee->getCost() + 3;
+    
+    public double getCost() {
+        return this.coffee.getCost() + 3;
     }
-
-    public function getDescription()
-    {
-        return $this->coffee->getDescription() . ', vanilla';
+    
+    public String getDescription() {
+        return this.coffee.getDescription() + ", vanilla";
     }
 }
 ```
-
 Lets make a coffee now
+```java
+Coffee someCoffee = new SimpleCoffee();
+System.out.println(someCoffee.getCost()); // 10
+System.out.println(someCoffee.getDescription()); // Simple Coffee
 
-```php
-$someCoffee = new SimpleCoffee();
-echo $someCoffee->getCost(); // 10
-echo $someCoffee->getDescription(); // Simple Coffee
+someCoffee = new MilkCoffee(someCoffee);
+System.out.println(someCoffee.getCost()); // 12
+System.out.println(someCoffee.getDescription()); // Simple Coffee, milk
 
-$someCoffee = new MilkCoffee($someCoffee);
-echo $someCoffee->getCost(); // 12
-echo $someCoffee->getDescription(); // Simple Coffee, milk
+someCoffee = new WhipCoffee(someCoffee);
+System.out.println(someCoffee.getCost()); // 17
+System.out.println(someCoffee.getDescription()); // Simple Coffee, milk, whip
 
-$someCoffee = new WhipCoffee($someCoffee);
-echo $someCoffee->getCost(); // 17
-echo $someCoffee->getDescription(); // Simple Coffee, milk, whip
-
-$someCoffee = new VanillaCoffee($someCoffee);
-echo $someCoffee->getCost(); // 20
-echo $someCoffee->getDescription(); // Simple Coffee, milk, whip, vanilla
+someCoffee = new VanillaCoffee(someCoffee);
+System.out.println(someCoffee.getCost()); // 20
+System.out.println(someCoffee.getDescription()); // Simple Coffee, milk, whip, vanilla
 ```
 
 📦 Facade
@@ -918,77 +891,66 @@ Wikipedia says
 
 Taking our computer example from above. Here we have the computer class
 
-```php
-class Computer
-{
-    public function getElectricShock()
-    {
-        echo "Ouch!";
+```java
+class Computer {
+    public void getElectricShock() {
+        System.out.println("Ouch!");
     }
 
-    public function makeSound()
-    {
-        echo "Beep beep!";
+    public void makeSound() {
+        System.out.println("Beep beep!");
     }
 
-    public function showLoadingScreen()
-    {
-        echo "Loading..";
+    public void showLoadingScreen() {
+        System.out.println("Loading..");
     }
 
-    public function bam()
-    {
-        echo "Ready to be used!";
+    public void bam() {
+        System.out.println("Ready to be used!");
     }
 
-    public function closeEverything()
-    {
-        echo "Bup bup bup buzzzz!";
+    public void closeEverything() {
+        System.out.println("Bup bup bup buzzzz!");
     }
 
-    public function sooth()
-    {
-        echo "Zzzzz";
+    public void sooth() {
+        System.out.println("Zzzzz");
     }
 
-    public function pullCurrent()
-    {
-        echo "Haaah!";
+    public void pullCurrent() {
+        System.out.println("Haaah!");
     }
 }
 ```
 Here we have the facade
-```php
-class ComputerFacade
-{
-    protected $computer;
-
-    public function __construct(Computer $computer)
-    {
-        $this->computer = $computer;
+```java
+class ComputerFacade {
+    private Computer computer;
+    
+    public ComputerFacade(Computer computer) {
+        this.computer = computer;
     }
-
-    public function turnOn()
-    {
-        $this->computer->getElectricShock();
-        $this->computer->makeSound();
-        $this->computer->showLoadingScreen();
-        $this->computer->bam();
+    
+    public void turnOn() {
+        this.computer.getElectricShock();
+        this.computer.makeSound();
+        this.computer.showLoadingScreen();
+        this.computer.bam();
     }
-
-    public function turnOff()
-    {
-        $this->computer->closeEverything();
-        $this->computer->pullCurrent();
-        $this->computer->sooth();
+    
+    public void turnOff() {
+        this.computer.closeEverything();
+        this.computer.pullCurrent();
+        this.computer.sooth();
     }
 }
 ```
 Now to use the facade
-```php
-$computer = new ComputerFacade(new Computer());
-$computer->turnOn(); // Ouch! Beep beep! Loading.. Ready to be used!
-$computer->turnOff(); // Bup bup buzzz! Haah! Zzzzz
+```java
+Computer computer = new Computer();
+ComputerFacade computerFacade = new ComputerFacade(computer);
+computerFacade.turnOn(); // Ouch! Beep beep! Loading.. Ready to be used!
+computerFacade.turnOff(); // Bup bup buzzz! Haah! Zzzzz
 ```
 
 🍃 Flyweight
@@ -1007,66 +969,58 @@ Wikipedia says
 
 Translating our tea example from above. First of all we have tea types and tea maker
 
-```php
+```java
 // Anything that will be cached is flyweight.
 // Types of tea here will be flyweights.
-class KarakTea
-{
+class KarakTea {
 }
 
 // Acts as a factory and saves the tea
-class TeaMaker
-{
-    protected $availableTea = [];
+class TeaMaker {
+    private HashMap<String, KarakTea> availableTea = new HashMap<>();
 
-    public function make($preference)
-    {
-        if (empty($this->availableTea[$preference])) {
-            $this->availableTea[$preference] = new KarakTea();
+    public KarakTea make(String preference) {
+        if (!availableTea.containsKey(preference)) {
+            availableTea.put(preference, new KarakTea());
         }
-
-        return $this->availableTea[$preference];
+        return availableTea.get(preference);
     }
 }
 ```
-
 Then we have the `TeaShop` which takes orders and serves them
+```java
+class TeaShop {
+    private Map<Integer, String> orders; // A dictionary that maps tables with teas
+    private TeaMaker teaMaker; // The tea factory
 
-```php
-class TeaShop
-{
-    protected $orders;
-    protected $teaMaker;
-
-    public function __construct(TeaMaker $teaMaker)
-    {
-        $this->teaMaker = $teaMaker;
+    public TeaShop(TeaMaker teaMaker) {
+        this.teaMaker = teaMaker;
+        this.orders = new HashMap<>();
     }
 
-    public function takeOrder(string $teaType, int $table)
-    {
-        $this->orders[$table] = $this->teaMaker->make($teaType);
+    public void takeOrder(String teaType, int table) {
+        this.orders.put(table, this.teaMaker.make(teaType));
     }
 
-    public function serve()
-    {
-        foreach ($this->orders as $table => $tea) {
-            echo "Serving tea to table# " . $table;
+    public void serve() {
+        for (Map.Entry<Integer, String> entry : this.orders.entrySet()) {
+            int table = entry.getKey();
+            String tea = entry.getValue();
+            System.out.println("Serving tea to table# " + table);
         }
     }
 }
 ```
 And it can be used as below
+```java
+TeaMaker teaMaker = new TeaMaker();
+TeaShop shop = new TeaShop(teaMaker);
 
-```php
-$teaMaker = new TeaMaker();
-$shop = new TeaShop($teaMaker);
+shop.takeOrder("less sugar", 1);
+shop.takeOrder("more milk", 2);
+shop.takeOrder("without sugar", 5);
 
-$shop->takeOrder('less sugar', 1);
-$shop->takeOrder('more milk', 2);
-$shop->takeOrder('without sugar', 5);
-
-$shop->serve();
+shop.serve();
 // Serving tea to table# 1
 // Serving tea to table# 2
 // Serving tea to table# 5
@@ -1087,64 +1041,55 @@ Wikipedia says
 
 Taking our security door example from above. Firstly we have the door interface and an implementation of door
 
-```php
-interface Door
-{
-    public function open();
-    public function close();
+```java
+interface Door {
+    void open();
+    void close();
 }
 
-class LabDoor implements Door
-{
-    public function open()
-    {
-        echo "Opening lab door";
+class LabDoor implements Door {
+    public void open() {
+        System.out.println("Opening lab door");
     }
 
-    public function close()
-    {
-        echo "Closing the lab door";
+    public void close() {
+        System.out.println("Closing the lab door");
     }
 }
 ```
 Then we have a proxy to secure any doors that we want
-```php
-class SecuredDoor implements Door
-{
-    protected $door;
+```java
+class SecuredDoor implements Door {
+    private Door door;
 
-    public function __construct(Door $door)
-    {
-        $this->door = $door;
+    public SecuredDoor(Door door) {
+        this.door = door;
     }
 
-    public function open($password)
-    {
-        if ($this->authenticate($password)) {
-            $this->door->open();
+    public void open(String password) {
+        if (authenticate(password)) {
+            door.open();
         } else {
-            echo "Big no! It ain't possible.";
+            System.out.println("Big no! It ain't possible.");
         }
     }
 
-    public function authenticate($password)
-    {
-        return $password === '$ecr@t';
+    public boolean authenticate(String password) {
+        return password.equals("$ecr@t");
     }
 
-    public function close()
-    {
-        $this->door->close();
+    public void close() {
+        door.close();
     }
 }
 ```
 And here is how it can be used
-```php
-$door = new SecuredDoor(new LabDoor());
-$door->open('invalid'); // Big no! It ain't possible.
+```java
+SecuredDoor door = new SecuredDoor(new LabDoor());
+door.open("invalid"); // Big no! It ain't possible.
 
-$door->open('$ecr@t'); // Opening lab door
-$door->close(); // Closing lab door
+door.open("$ecr@t"); // Opening lab door
+door.close(); // Closing lab door
 ```
 Yet another example would be some sort of data-mapper implementation. For example, I recently made an ODM (Object Data Mapper) for MongoDB using this pattern where I wrote a proxy around mongo classes while utilizing the magic method `__call()`. All the method calls were proxied to the original mongo class and result retrieved was returned as it is but in case of `find` or `findOne` data was mapped to the required class objects and the object was returned instead of `Cursor`.
 
