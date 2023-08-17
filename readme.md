@@ -1404,55 +1404,50 @@ Wikipedia says
 Here is the simplest example of a chat room (i.e. mediator) with users (i.e. colleagues) sending messages to each other.
 
 First of all, we have the mediator i.e. the chat room
-
-```php
-interface ChatRoomMediator 
-{
-    public function showMessage(User $user, string $message);
+```java
+interface ChatRoomMediator {
+    void showMessage(User user, String message);
 }
 
 // Mediator
-class ChatRoom implements ChatRoomMediator
-{
-    public function showMessage(User $user, string $message)
-    {
-        $time = date('M d, y H:i');
-        $sender = $user->getName();
+class ChatRoom implements ChatRoomMediator {
+    public void showMessage(User user, String message) {
+        Date time = new Date();
+        String sender = user.getName();
 
-        echo $time . '[' . $sender . ']:' . $message;
+        System.out.println(time + "[" + sender + "]:" + message);
     }
 }
 ```
-
 Then we have our users i.e. colleagues
-```php
+```java
 class User {
-    protected $name;
-    protected $chatMediator;
-
-    public function __construct(string $name, ChatRoomMediator $chatMediator) {
-        $this->name = $name;
-        $this->chatMediator = $chatMediator;
+    private String name;
+    private ChatRoomMediator chatMediator;
+    
+    public User(String name, ChatRoomMediator chatMediator) {
+        this.name = name;
+        this.chatMediator = chatMediator;
     }
-
-    public function getName() {
-        return $this->name;
+    
+    public String getName() {
+        return this.name;
     }
-
-    public function send($message) {
-        $this->chatMediator->showMessage($this, $message);
+    
+    public void send(String message) {
+        this.chatMediator.showMessage(this, message);
     }
 }
 ```
 And the usage
-```php
-$mediator = new ChatRoom();
+```java
+ChatRoom mediator = new ChatRoom();
 
-$john = new User('John Doe', $mediator);
-$jane = new User('Jane Doe', $mediator);
+User john = new User("John Doe", mediator);
+User jane = new User("Jane Doe", mediator);
 
-$john->send('Hi there!');
-$jane->send('Hey!');
+john.send("Hi there!");
+jane.send("Hey!");
 
 // Output will be
 // Feb 14, 10:58 [John]: Hi there!
@@ -1477,75 +1472,62 @@ Usually useful when you need to provide some sort of undo functionality.
 Lets take an example of text editor which keeps saving the state from time to time and that you can restore if you want.
 
 First of all we have our memento object that will be able to hold the editor state
-
-```php
-class EditorMemento
-{
-    protected $content;
-
-    public function __construct(string $content)
-    {
-        $this->content = $content;
+```java
+class EditorMemento {
+    private String content;
+    
+    public EditorMemento(String content) {
+        this.content = content;
     }
-
-    public function getContent()
-    {
-        return $this->content;
+    
+    public String getContent() {
+        return this.content;
     }
 }
 ```
-
 Then we have our editor i.e. originator that is going to use memento object
+```java
+class Editor {
+    private String content = "";
 
-```php
-class Editor
-{
-    protected $content = '';
-
-    public function type(string $words)
-    {
-        $this->content = $this->content . ' ' . $words;
+    public void type(String words) {
+        this.content = this.content + " " + words;
     }
 
-    public function getContent()
-    {
-        return $this->content;
+    public String getContent() {
+        return this.content;
     }
 
-    public function save()
-    {
-        return new EditorMemento($this->content);
+    public EditorMemento save() {
+        return new EditorMemento(this.content);
     }
 
-    public function restore(EditorMemento $memento)
-    {
-        $this->content = $memento->getContent();
+    public void restore(EditorMemento memento) {
+        this.content = memento.getContent();
     }
 }
 ```
-
 And then it can be used as
-
-```php
-$editor = new Editor();
+```java
+Editor editor = new Editor();
 
 // Type some stuff
-$editor->type('This is the first sentence.');
-$editor->type('This is second.');
+editor.type("This is the first sentence.");
+editor.type("This is second.");
 
 // Save the state to restore to : This is the first sentence. This is second.
-$saved = $editor->save();
+String saved = editor.save();
 
 // Type some more
-$editor->type('And this is third.');
+editor.type("And this is third.");
 
 // Output: Content before Saving
-echo $editor->getContent(); // This is the first sentence. This is second. And this is third.
+System.out.println(editor.getContent()); // This is the first sentence. This is second. And this is third.
 
 // Restoring to last saved state
-$editor->restore($saved);
+editor.restore(saved);
 
-$editor->getContent(); // This is the first sentence. This is second.
+editor.getContent(); // This is the first sentence. This is second.
 ```
 
 😎 Observer
@@ -1562,75 +1544,65 @@ Wikipedia says
 **Programmatic example**
 
 Translating our example from above. First of all we have job seekers that need to be notified for a job posting
-```php
-class JobPost
-{
-    protected $title;
-
-    public function __construct(string $title)
-    {
-        $this->title = $title;
+```java
+class JobPost {
+    private String title;
+    
+    public JobPost(String title) {
+        this.title = title;
     }
-
-    public function getTitle()
-    {
-        return $this->title;
+    
+    public String getTitle() {
+        return this.title;
     }
 }
 
-class JobSeeker implements Observer
-{
-    protected $name;
-
-    public function __construct(string $name)
-    {
-        $this->name = $name;
+class JobSeeker {
+    private String name;
+    
+    public JobSeeker(String name) {
+        this.name = name;
     }
-
-    public function onJobPosted(JobPost $job)
-    {
+    
+    public void onJobPosted(JobPost job) {
         // Do something with the job posting
-        echo 'Hi ' . $this->name . '! New job posted: '. $job->getTitle();
+        System.out.println("Hi " + this.name + "! New job posted: " + job.getTitle());
     }
 }
 ```
 Then we have our job postings to which the job seekers will subscribe
-```php
-class EmploymentAgency implements Observable
-{
-    protected $observers = [];
+```java
+class EmploymentAgency {
+    private ArrayList<Observer> observers = new ArrayList<>();
 
-    protected function notify(JobPost $jobPosting)
-    {
-        foreach ($this->observers as $observer) {
-            $observer->onJobPosted($jobPosting);
+    private void notify(JobPost jobPosting) {
+        for (Observer observer : observers) {
+            observer.onJobPosted(jobPosting);
         }
     }
 
-    public function attach(Observer $observer)
-    {
-        $this->observers[] = $observer;
+    public void attach(Observer observer) {
+        observers.add(observer);
     }
 
-    public function addJob(JobPost $jobPosting)
-    {
-        $this->notify($jobPosting);
+    public void addJob(JobPost jobPosting) {
+        notify(jobPosting);
     }
 }
 ```
 Then it can be used as
-```php
+```java
 // Create subscribers
-$johnDoe = new JobSeeker('John Doe');
-$janeDoe = new JobSeeker('Jane Doe');
+JobSeeker johnDoe = new JobSeeker("John Doe");
+JobSeeker janeDoe = new JobSeeker("Jane Doe");
 
 // Create publisher and attach subscribers
-$jobPostings = new EmploymentAgency();
-$jobPostings->attach($johnDoe);
-$jobPostings->attach($janeDoe);
+EmploymentAgency jobPostings = new EmploymentAgency();
+jobPostings.attach(johnDoe);
+jobPostings.attach(janeDoe);
 
 // Add a new job and see if subscribers get notified
-$jobPostings->addJob(new JobPost('Software Engineer'));
+jobPostings.addJob(new JobPost("Software Engineer"));
 
 // Output
 // Hi John Doe! New job posted: Software Engineer
@@ -1643,7 +1615,7 @@ Real world example
 > Consider someone visiting Dubai. They just need a way (i.e. visa) to enter Dubai. After arrival, they can come and visit any place in Dubai on their own without having to ask for permission or to do some leg work in order to visit any place here; just let them know of a place and they can visit it. Visitor pattern lets you do just that, it helps you add places to visit so that they can visit as much as they can without having to do any legwork.
 
 In plain words
-> Visitor pattern lets you add further operations to objects without having to modify them.
+> Visitor pattern lets you add further operations (aka functionality) to objects without having to modify them.
 
 Wikipedia says
 > In object-oriented programming and software engineering, the visitor design pattern is a way of separating an algorithm from an object structure on which it operates. A practical result of this separation is the ability to add new operations to existing object structures without modifying those structures. It is one way to follow the open/closed principle.
@@ -1651,129 +1623,108 @@ Wikipedia says
 **Programmatic example**
 
 Let's take an example of a zoo simulation where we have several different kinds of animals and we have to make them Sound. Let's translate this using visitor pattern
-
-```php
+```java
 // Visitee
-interface Animal
-{
-    public function accept(AnimalOperation $operation);
+interface Animal {
+    void accept(AnimalOperation operation);
 }
 
 // Visitor
-interface AnimalOperation
-{
-    public function visitMonkey(Monkey $monkey);
-    public function visitLion(Lion $lion);
-    public function visitDolphin(Dolphin $dolphin);
+interface AnimalOperation {
+    void visitMonkey(Monkey monkey);
+    void visitLion(Lion lion);
+    void visitDolphin(Dolphin dolphin);
 }
 ```
 Then we have our implementations for the animals
-```php
-class Monkey implements Animal
-{
-    public function shout()
-    {
-        echo 'Ooh oo aa aa!';
+```java
+class Monkey implements Animal {
+    public void shout() {
+        System.out.println("Ooh oo aa aa!");
     }
 
-    public function accept(AnimalOperation $operation)
-    {
-        $operation->visitMonkey($this);
+    public void accept(AnimalOperation operation) {
+        operation.visitMonkey(this);
     }
 }
 
-class Lion implements Animal
-{
-    public function roar()
-    {
-        echo 'Roaaar!';
+class Lion implements Animal {
+    public void roar() {
+        System.out.println("Roaaar!");
     }
 
-    public function accept(AnimalOperation $operation)
-    {
-        $operation->visitLion($this);
+    public void accept(AnimalOperation operation) {
+        operation.visitLion(this);
     }
 }
 
-class Dolphin implements Animal
-{
-    public function speak()
-    {
-        echo 'Tuut tuttu tuutt!';
+class Dolphin implements Animal {
+    public void speak() {
+        System.out.println("Tuut tuttu tuutt!");
     }
 
-    public function accept(AnimalOperation $operation)
-    {
-        $operation->visitDolphin($this);
+    public void accept(AnimalOperation operation) {
+        operation.visitDolphin(this);
     }
 }
 ```
-Let's implement our visitor
-```php
-class Speak implements AnimalOperation
-{
-    public function visitMonkey(Monkey $monkey)
-    {
-        $monkey->shout();
+Let's implement our visitor, which is a class that groups together common behaviours of other classes. 
+This is the class our client is going to interact with. 
+```java
+class Speak implements AnimalOperation {
+    public void visitMonkey(Monkey monkey) {
+        monkey.shout();
     }
 
-    public function visitLion(Lion $lion)
-    {
-        $lion->roar();
+    public void visitLion(Lion lion) {
+        lion.roar();
     }
 
-    public function visitDolphin(Dolphin $dolphin)
-    {
-        $dolphin->speak();
+    public void visitDolphin(Dolphin dolphin) {
+        dolphin.speak();
     }
 }
 ```
-
 And then it can be used as
-```php
-$monkey = new Monkey();
-$lion = new Lion();
-$dolphin = new Dolphin();
+```java
+Monkey monkey = new Monkey();
+Lion lion = new Lion();
+Dolphin dolphin = new Dolphin();
 
-$speak = new Speak();
+Speak speak = new Speak();
 
-$monkey->accept($speak);    // Ooh oo aa aa!    
-$lion->accept($speak);      // Roaaar!
-$dolphin->accept($speak);   // Tuut tutt tuutt!
+monkey.accept(speak);    // Ooh oo aa aa!    
+lion.accept(speak);      // Roaaar!
+dolphin.accept(speak);   // Tuut tutt tuutt!
 ```
 We could have done this simply by having an inheritance hierarchy for the animals but then we would have to modify the animals whenever we would have to add new actions to animals. But now we will not have to change them. For example, let's say we are asked to add the jump behavior to the animals, we can simply add that by creating a new visitor i.e.
-
-```php
-class Jump implements AnimalOperation
-{
-    public function visitMonkey(Monkey $monkey)
-    {
-        echo 'Jumped 20 feet high! on to the tree!';
+```java
+class Jump implements AnimalOperation {
+    public void visitMonkey(Monkey monkey) {
+        System.out.println("Jumped 20 feet high! on to the tree!");
     }
 
-    public function visitLion(Lion $lion)
-    {
-        echo 'Jumped 7 feet! Back on the ground!';
+    public void visitLion(Lion lion) {
+        System.out.println("Jumped 7 feet! Back on the ground!");
     }
 
-    public function visitDolphin(Dolphin $dolphin)
-    {
-        echo 'Walked on water a little and disappeared';
+    public void visitDolphin(Dolphin dolphin) {
+        System.out.println("Walked on water a little and disappeared");
     }
 }
 ```
 And for the usage
-```php
-$jump = new Jump();
+```java
+Jump jump = new Jump();
 
-$monkey->accept($speak);   // Ooh oo aa aa!
-$monkey->accept($jump);    // Jumped 20 feet high! on to the tree!
+monkey.accept(speak);   // Ooh oo aa aa!
+monkey.accept(jump);    // Jumped 20 feet high! on to the tree!
 
-$lion->accept($speak);     // Roaaar!
-$lion->accept($jump);      // Jumped 7 feet! Back on the ground!
+lion.accept(speak);     // Roaaar!
+lion.accept(jump);      // Jumped 7 feet! Back on the ground!
 
-$dolphin->accept($speak);  // Tuut tutt tuutt!
-$dolphin->accept($jump);   // Walked on water a little and disappeared
+dolphin.accept(speak);  // Tuut tutt tuutt!
+dolphin.accept(jump);   // Walked on water a little and disappeared
 ```
 
 💡 Strategy
@@ -1792,7 +1743,7 @@ Wikipedia says
 
 Translating our example from above. First of all we have our strategy interface and different strategy implementations
 
-```php
+```java
 interface SortStrategy
 {
     public function sort(array $dataset): array;
@@ -1820,9 +1771,8 @@ class QuickSortStrategy implements SortStrategy
     }
 }
 ```
-
 And then we have our client that is going to use any strategy
-```php
+```java
 class Sorter
 {
     protected $sorterSmall;
@@ -1845,7 +1795,7 @@ class Sorter
 }
 ```
 And it can be used as
-```php
+```java
 $smalldataset = [1, 3, 4, 2];
 $bigdataset = [1, 4, 3, 2, 8, 10, 5, 6, 9, 7];
 
@@ -1872,7 +1822,7 @@ Wikipedia says
 
 Let's take an example of a phone. First of all we have our state interface and some state implementations
 
-```php
+```java
 interface PhoneState {
     public function pickUp(): PhoneState;
     public function hangUp(): PhoneState;
@@ -1916,10 +1866,8 @@ class PhoneStateCalling implements PhoneState {
     }
 }
 ```
-
 Then we have our Phone class that changes the state on different behavior calls
-
-```php
+```java
 class Phone {
     private $state;
 
@@ -1937,10 +1885,8 @@ class Phone {
     }
 }
 ```
-
 And then it can be used as follows and it will call the relevant state methods:
-
-```php
+```java
 $phone = new Phone();
 
 $phone->pickUp();
@@ -1970,7 +1916,7 @@ Wikipedia says
 Imagine we have a build tool that helps us test, lint, build, generate build reports (i.e. code coverage reports, linting report etc) and deploy our app on the test server.
 
 First of all we have our base class that specifies the skeleton for the build algorithm
-```php
+```java
 abstract class Builder
 {
 
@@ -1989,10 +1935,8 @@ abstract class Builder
     abstract public function deploy();
 }
 ```
-
 Then we can have our implementations
-
-```php
+```java
 class AndroidBuilder extends Builder
 {
     public function test()
@@ -2040,8 +1984,7 @@ class IosBuilder extends Builder
 }
 ```
 And then it can be used as
-
-```php
+```java
 $androidBuilder = new AndroidBuilder();
 $androidBuilder->build();
 
