@@ -546,7 +546,7 @@ First we have an interface `Lion` that all types of lions have to implement
 
 ```java
 interface Lion {
-    public void roar();
+    void roar();
 }
 
 class AfricanLion implements Lion {
@@ -614,82 +614,69 @@ Wikipedia says
 
 Translating our WebPage example from above. Here we have the `WebPage` hierarchy
 
-```php
-interface WebPage
-{
-    public function __construct(Theme $theme);
-    public function getContent();
+```java
+interface WebPage {
+    void getContent();
 }
 
-class About implements WebPage
-{
-    protected $theme;
-
-    public function __construct(Theme $theme)
-    {
-        $this->theme = $theme;
+class About implements WebPage {
+    private Theme theme;
+    
+    public About(Theme theme) {
+        this.theme = theme;
     }
-
-    public function getContent()
-    {
-        return "About page in " . $this->theme->getColor();
+    
+    public void getContent() {
+        System.out.println("About page in " + this.theme.getColor());
     }
 }
 
-class Careers implements WebPage
-{
-    protected $theme;
-
-    public function __construct(Theme $theme)
-    {
-        $this->theme = $theme;
+class Careers implements WebPage {
+    private Theme theme;
+    
+    public Careers(Theme theme) {
+        this.theme = theme;
     }
-
-    public function getContent()
-    {
-        return "Careers page in " . $this->theme->getColor();
+    
+    public void getContent() {
+        System.out.println("Careers page in " + this.theme.getColor());
     }
 }
 ```
 And the separate theme hierarchy
-```php
-
-interface Theme
-{
-    public function getColor();
+```java
+interface Theme {
+    String getColor();
 }
 
-class DarkTheme implements Theme
-{
-    public function getColor()
-    {
-        return 'Dark Black';
+class DarkTheme implements Theme {
+    public String getColor() {
+        return "Dark black";
     }
 }
-class LightTheme implements Theme
-{
-    public function getColor()
-    {
-        return 'Off white';
+
+class LightTheme implements Theme {
+    public String getColor() {
+        return "Off white";
     }
 }
-class AquaTheme implements Theme
-{
-    public function getColor()
-    {
-        return 'Light blue';
+
+class AquaTheme implements Theme {
+    public String getColor() {
+        return "Light blue";
     }
 }
 ```
 And both the hierarchies
-```php
-$darkTheme = new DarkTheme();
+```java
+DarkTheme darkTheme = new DarkTheme();
+LightTheme lightTheme = new LightTheme();
 
-$about = new About($darkTheme);
-$careers = new Careers($darkTheme);
+About about = new About(darkTheme);
+Careers careers = new Careers(lightTheme);
 
-echo $about->getContent(); // "About page in Dark Black";
-echo $careers->getContent(); // "Careers page in Dark Black";
+System.out.println(about.getContent()); // "About page in Dark black"
+System.out.println(careers.getContent()); // "Careers page in Off white"
 ```
 
 🌿 Composite
@@ -708,121 +695,91 @@ Wikipedia says
 
 Taking our employees example from above. Here we have different employee types
 
-```php
-interface Employee
-{
-    public function __construct(string $name, float $salary);
-    public function getName(): string;
-    public function setSalary(float $salary);
-    public function getSalary(): float;
-    public function getRoles(): array;
+```java
+interface Employee {
+    String getName();
+    float getSalary();
+    void setSalary(float salary);
 }
 
-class Developer implements Employee
-{
-    protected $salary;
-    protected $name;
-    protected $roles;
-    
-    public function __construct(string $name, float $salary)
-    {
-        $this->name = $name;
-        $this->salary = $salary;
+class Developer implements Employee {
+    private String name;
+    private float salary;
+
+    public Developer(String name, float salary) {
+        this.name = name;
+        this.salary = salary;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
+    public String getName() {
+        return this.name;
     }
 
-    public function setSalary(float $salary)
-    {
-        $this->salary = $salary;
+    public float getSalary() {
+        return this.salary;
     }
 
-    public function getSalary(): float
-    {
-        return $this->salary;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
+    public void setSalary(float salary) {
+        this.salary = salary;
     }
 }
 
-class Designer implements Employee
-{
-    protected $salary;
-    protected $name;
-    protected $roles;
+public class Designer implements Employee {
+    protected String name;
+    protected float salary;
 
-    public function __construct(string $name, float $salary)
-    {
-        $this->name = $name;
-        $this->salary = $salary;
+    public Designer(String name, float salary) {
+        this.name = name;
+        this.salary = salary;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
+    public String getName() {
+        return this.name;
     }
 
-    public function setSalary(float $salary)
-    {
-        $this->salary = $salary;
+    public float getSalary() {
+        return this.salary;
     }
 
-    public function getSalary(): float
-    {
-        return $this->salary;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
+    public void setSalary(float salary) {
+        this.salary = salary;
     }
 }
 ```
-
 Then we have an organization which consists of several different types of employees
+```java
+class Organization {
+    private ArrayList<Employee> employees;
 
-```php
-class Organization
-{
-    protected $employees;
-
-    public function addEmployee(Employee $employee)
-    {
-        $this->employees[] = $employee;
+    public Organization() {
+        employees = new ArrayList<Employee>();
     }
 
-    public function getNetSalaries(): float
-    {
-        $netSalary = 0;
+    public void addEmployee(Employee employee) {
+        employees.add(employee);
+    }
 
-        foreach ($this->employees as $employee) {
-            $netSalary += $employee->getSalary();
+    public float getNetSalaries() {
+        float netSalary = 0;
+        for (Employee employee : employees) {
+            netSalary += employee.getSalary();
         }
-
-        return $netSalary;
+        return netSalary;
     }
 }
 ```
-
 And then it can be used as
-
-```php
+```java
 // Prepare the employees
-$john = new Developer('John Doe', 12000);
-$jane = new Designer('Jane Doe', 15000);
+Developer john = new Developer("John Doe", 12000);
+Designer jane = new Designer("Jane Doe", 15000);
 
 // Add them to organization
-$organization = new Organization();
-$organization->addEmployee($john);
-$organization->addEmployee($jane);
+Organization organization = new Organization();
+organization.addEmployee(john);
+organization.addEmployee(jane);
 
-echo "Net salaries: " . $organization->getNetSalaries(); // Net Salaries: 27000
+System.out.println("Net salaries: " + organization.getNetSalaries()); // Net Salaries: 27000
 ```
 
 ☕ Decorator
