@@ -15,7 +15,8 @@ A topic that can easily make anyone's mind wobble. Here I try to make them stick
 ***
 
 <br>
-  
+<div align="center">
+
 |[Creational Design Patterns](#creational-design-patterns)|[Structural Design Patterns](#structural-design-patterns)|[Behavioral Design Patterns](#behavioral-design-patterns)|
 |:-:|:-:|:-:|
 |[Simple Factory](#-simple-factory)|[Adapter](#-adapter)|[Chain of Responsibility](#-chain-of-responsibility)|
@@ -29,6 +30,7 @@ A topic that can easily make anyone's mind wobble. Here I try to make them stick
 |||[State](#-state)|
 |||[Template Method](#-template-method)|
 
+</div>
 <br>
 
 Introduction
@@ -48,13 +50,6 @@ Wikipedia describes them as
 - Do not try to force them; bad things are supposed to happen, if done so. 
 - Keep in mind that design patterns are solutions **to** problems, not solutions **finding** problems; so don't overthink.
 - If used in a correct place in a correct manner, they can prove to be a savior; or else they can result in a horrible mess of a code.
-
-Types of Design Patterns
------------------
-
-* [Creational](#creational-design-patterns)
-* [Structural](#structural-design-patterns)
-* [Behavioral](#behavioral-design-patterns)
 
 Creational Design Patterns
 ==========================
@@ -1308,7 +1303,7 @@ Wikipedia says
 
 **Programmatic example**
 
-In PHP it is quite easy to implement using SPL (Standard PHP Library). Translating our radio stations example from above. First of all we have `RadioStation`
+Translating our radio stations example from above. First of all we have `RadioStation`
 
 ```java
 class RadioStation {
