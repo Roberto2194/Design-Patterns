@@ -324,7 +324,7 @@ Wikipedia says
 Having said that let me add a bit about what telescoping constructor anti-pattern is. At one point or the other we have all seen a constructor like below:
 
 ```java
-MyClass(int size, boolean cheese, boolean pepperoni, boolean tomato, boolean lettuce) { ... }
+Burger Burger(int size, boolean cheese, boolean pepperoni, boolean tomato, boolean lettuce) { ... }
 ```
 
 As you can see; the number of constructor parameters can quickly get out of hand and it might become difficult to understand the arrangement of parameters. Plus this parameter list could keep on growing if you would want to add more options in future. This is called telescoping constructor anti-pattern.
@@ -390,11 +390,11 @@ class BurgerBuilder {
 ```
 And then it can be used as:
 ```java
-Burger burger = new BurgerBuilder(14)
-                    .addPepperoni()
-                    .addLettuce()
-                    .addTomato()
-                    .build();
+BurgerBuilder burgerBuilder = new BurgerBuilder(14)
+                                  .addPepperoni()
+                                  .addLettuce()
+                                  .addTomato()
+                                  .build();
 ```
 
 **When to use?**
@@ -420,8 +420,8 @@ In Java, it can be easily done using `clone`
 
 ```java
 class Sheep {
-    protected String name;
-    protected String category;
+    private String name;
+    private String category;
 
     public Sheep(String name, String category) {
         this.name = name;
