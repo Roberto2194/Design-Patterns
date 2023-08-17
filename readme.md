@@ -324,7 +324,7 @@ Wikipedia says
 Having said that let me add a bit about what telescoping constructor anti-pattern is. At one point or the other we have all seen a constructor like below:
 
 ```java
-Burger Burger(int size, boolean cheese, boolean pepperoni, boolean tomato, boolean lettuce) { ... }
+Burger burger = new Burger(int size, boolean cheese, boolean pepperoni, boolean tomato, boolean lettuce);
 ```
 
 As you can see; the number of constructor parameters can quickly get out of hand and it might become difficult to understand the arrangement of parameters. Plus this parameter list could keep on growing if you would want to add more options in future. This is called telescoping constructor anti-pattern.
