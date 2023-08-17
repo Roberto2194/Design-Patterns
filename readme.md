@@ -544,72 +544,57 @@ Consider a game where there is a hunter and he hunts lions.
 
 First we have an interface `Lion` that all types of lions have to implement
 
-```php
-interface Lion
-{
-    public function roar();
+```java
+interface Lion {
+    public void roar();
 }
 
-class AfricanLion implements Lion
-{
-    public function roar()
-    {
+class AfricanLion implements Lion {
+    public void roar() {
     }
 }
 
-class AsianLion implements Lion
-{
-    public function roar()
-    {
+class AsianLion implements Lion {
+    public void roar() {
     }
 }
 ```
 And hunter expects any implementation of `Lion` interface to hunt.
-```php
-class Hunter
-{
-    public function hunt(Lion $lion)
-    {
-        $lion->roar();
+```java
+class Hunter {
+    public void hunt(Lion lion) {
+        lion.roar();
     }
 }
 ```
-
 Now let's say we have to add a `WildDog` in our game so that hunter can hunt that also. But we can't do that directly because dog has a different interface. To make it compatible for our hunter, we will have to create an adapter that is compatible
-
-```php
+```java
 // This needs to be added to the game
-class WildDog
-{
-    public function bark()
-    {
+class WildDog {
+    public void bark() {
     }
 }
 
 // Adapter around wild dog to make it compatible with our game
-class WildDogAdapter implements Lion
-{
-    protected $dog;
+class WildDogAdapter implements Lion {
+    private WildDog dog;
 
-    public function __construct(WildDog $dog)
-    {
-        $this->dog = $dog;
+    public WildDogAdapter(WildDog dog) {
+        this.dog = dog;
     }
 
-    public function roar()
-    {
-        $this->dog->bark();
+    public void roar() {
+        this.dog.bark();
     }
 }
 ```
 And now the `WildDog` can be used in our game using `WildDogAdapter`.
+```java
+WildDog wildDog = new WildDog();
+WildDogAdapter wildDogAdapter = new WildDogAdapter(wildDog);
 
-```php
-$wildDog = new WildDog();
-$wildDogAdapter = new WildDogAdapter($wildDog);
-
-$hunter = new Hunter();
-$hunter->hunt($wildDogAdapter);
+Hunter hunter = new Hunter();
+hunter.hunt(wildDogAdapter);
 ```
 
 🚡 Bridge
