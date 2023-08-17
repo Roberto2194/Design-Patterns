@@ -14,8 +14,6 @@ A topic that can easily make anyone's mind wobble. Here I try to make them stick
 
 ***
 
-<sub>Check out my [other project](http://roadmap.sh) and say "hi" on [Twitter](https://twitter.com/kamranahmedse).</sub>
-
 <br>
 
 |[Creational Design Patterns](#creational-design-patterns)|[Structural Design Patterns](#structural-design-patterns)|[Behavioral Design Patterns](#behavioral-design-patterns)|
@@ -1129,85 +1127,67 @@ Wikipedia says
 
 Translating our account example above. First of all we have a base account having the logic for chaining the accounts together and some accounts
 
-```php
-abstract class Account
-{
-    protected $successor;
-    protected $balance;
-
-    public function setNext(Account $account)
-    {
-        $this->successor = $account;
+```java
+abstract class Account {
+    private Account successor; 
+    private float balance;
+    
+    public void setNext(Account account) {
+        this.successor = account;
     }
-
-    public function pay(float $amountToPay)
-    {
-        if ($this->canPay($amountToPay)) {
-            echo sprintf('Paid %s using %s' . PHP_EOL, $amountToPay, get_called_class());
-        } elseif ($this->successor) {
-            echo sprintf('Cannot pay using %s. Proceeding ..' . PHP_EOL, get_called_class());
-            $this->successor->pay($amountToPay);
+    
+    public void pay(float amountToPay) throws Exception {
+        if (canPay(amountToPay)) {
+            System.out.prinln("Paid %.2f using %s", amountToPay, this.getClass().getSimpleName());
+        } else if (this.successor != null) {
+            System.out.println("Cannot pay using %s. Proceeding .. ", this.getClass().getSimpleName());
+            this.successor.pay(amountToPay);
         } else {
-            throw new Exception('None of the accounts have enough balance');
+            throw new Exception("None of the accounts have enough balance");
         }
     }
-
-    public function canPay($amount): bool
-    {
-        return $this->balance >= $amount;
+    
+    public boolean canPay(float amount) {
+        return this.balance >= amount;
     }
 }
 
-class Bank extends Account
-{
-    protected $balance;
-
-    public function __construct(float $balance)
-    {
-        $this->balance = $balance;
+class Bank extends Account {
+    public Bank(float balance) {
+        this.balance = balance;
     }
 }
 
-class Paypal extends Account
-{
-    protected $balance;
-
-    public function __construct(float $balance)
-    {
-        $this->balance = $balance;
+class Paypal extends Account {
+    public Paypal(float balance) {
+        this.balance = balance;
     }
 }
 
-class Bitcoin extends Account
-{
-    protected $balance;
-
-    public function __construct(float $balance)
-    {
-        $this->balance = $balance;
+class Bitcoin extends Account {
+    public Bitcoin(float balance) {
+        this.balance = balance;
     }
 }
 ```
-
 Now let's prepare the chain using the links defined above (i.e. Bank, Paypal, Bitcoin)
-
-```php
+```java
 // Let's prepare a chain like below
-//      $bank->$paypal->$bitcoin
+//      bank.paypal.bitcoin
 //
 // First priority bank
 //      If bank can't pay then paypal
 //      If paypal can't pay then bit coin
 
-$bank = new Bank(100);          // Bank with balance 100
-$paypal = new Paypal(200);      // Paypal with balance 200
-$bitcoin = new Bitcoin(300);    // Bitcoin with balance 300
+Bank bank = new Bank(100);             // Bank with balance 100
+Paypal paypal = new Paypal(200);       // Paypal with balance 200
+Bitcoin bitcoin = new Bitcoin(300);    // Bitcoin with balance 300
 
-$bank->setNext($paypal);
-$paypal->setNext($bitcoin);
+bank.setNext(paypal);
+paypal.setNext(bitcoin);
 
 // Let's try to pay using the first priority i.e. bank
-$bank->pay(259);
+bank.pay(259);
 
 // Output will be
 // ==============
@@ -1232,102 +1212,86 @@ Wikipedia says
 **Programmatic Example**
 
 First of all we have the receiver that has the implementation of every action that could be performed
-```php
+```java
 // Receiver
-class Bulb
-{
-    public function turnOn()
-    {
-        echo "Bulb has been lit";
+class Bulb {
+    public void turnOn() {
+        System.out.println("Bulb has been lit");
     }
 
-    public function turnOff()
-    {
-        echo "Darkness!";
+    public void turnOff() {
+        System.out.println("Darkness!");
     }
 }
 ```
 then we have an interface that each of the commands are going to implement and then we have a set of commands
-```php
-interface Command
-{
-    public function execute();
-    public function undo();
-    public function redo();
+```java
+interface Command {
+    public void execute();
+    public void undo();
+    public void redo();
 }
 
 // Command
-class TurnOn implements Command
-{
-    protected $bulb;
+class TurnOn implements Command {
+    private Bulb bulb;
 
-    public function __construct(Bulb $bulb)
-    {
-        $this->bulb = $bulb;
+    public TurnOn(Bulb bulb) {
+        this.bulb = bulb;
     }
 
-    public function execute()
-    {
-        $this->bulb->turnOn();
+    public void execute() {
+        this.bulb.turnOn();
     }
 
-    public function undo()
-    {
-        $this->bulb->turnOff();
+    public void undo() {
+        this.bulb.turnOff();
     }
 
-    public function redo()
-    {
-        $this->execute();
+    public void redo() {
+        this.execute();
     }
 }
 
-class TurnOff implements Command
-{
-    protected $bulb;
+class TurnOff implements Command {
+    private Bulb bulb;
 
-    public function __construct(Bulb $bulb)
-    {
-        $this->bulb = $bulb;
+    public TurnOff(Bulb bulb) {
+        this.bulb = bulb;
     }
 
-    public function execute()
-    {
-        $this->bulb->turnOff();
+    public void execute() {
+        this.bulb.turnOff();
     }
 
-    public function undo()
-    {
-        $this->bulb->turnOn();
+    public void undo() {
+        this.bulb.turnOn();
     }
 
-    public function redo()
-    {
-        $this->execute();
+    public void redo() {
+        this.execute();
     }
 }
 ```
 Then we have an `Invoker` with whom the client will interact to process any commands
-```php
+```java
 // Invoker
-class RemoteControl
-{
-    public function submit(Command $command)
-    {
-        $command->execute();
+class RemoteControl {
+    public void submit(Command command) {
+        command.execute();
     }
 }
 ```
 Finally let's see how we can use it in our client
-```php
-$bulb = new Bulb();
+```java
+Bulb bulb = new Bulb();
 
-$turnOn = new TurnOn($bulb);
-$turnOff = new TurnOff($bulb);
+TurnOn turnOn = new TurnOn(bulb);
+TurnOff turnOff = new TurnOff(bulb);
 
-$remote = new RemoteControl();
-$remote->submit($turnOn); // Bulb has been lit!
-$remote->submit($turnOff); // Darkness!
+RemoteControl remote = new RemoteControl();
+remote.submit(turnOn); // Bulb has been lit!
+remote.submit(turnOff); // Darkness!
 ```
 
 Command pattern can also be used to implement a transaction based system. Where you keep maintaining the history of commands as soon as you execute them. If the final command is successfully executed, all good otherwise just iterate through the history and keep executing the `undo` on all the executed commands.
@@ -1348,94 +1312,79 @@ Wikipedia says
 
 In PHP it is quite easy to implement using SPL (Standard PHP Library). Translating our radio stations example from above. First of all we have `RadioStation`
 
-```php
-class RadioStation
-{
-    protected $frequency;
+```java
+class RadioStation {
+    private float frequency;
 
-    public function __construct(float $frequency)
-    {
-        $this->frequency = $frequency;
+    public RadioStation(float frequency) {
+        this.frequency = frequency;
     }
 
-    public function getFrequency(): float
-    {
-        return $this->frequency;
+    public float getFrequency() {
+        return this.frequency;
     }
 }
 ```
 Then we have our iterator
+```java
+class StationList implements Iterable<RadioStation> {
+    private List<RadioStation> stations = new ArrayList<>();
+    private int counter;
 
-```php
-use Countable;
-use Iterator;
-
-class StationList implements Countable, Iterator
-{
-    /** @var RadioStation[] $stations */
-    protected $stations = [];
-
-    /** @var int $counter */
-    protected $counter;
-
-    public function addStation(RadioStation $station)
-    {
-        $this->stations[] = $station;
+    public void addStation(RadioStation station) {
+        this.stations.add(station);
     }
 
-    public function removeStation(RadioStation $toRemove)
-    {
-        $toRemoveFrequency = $toRemove->getFrequency();
-        $this->stations = array_filter($this->stations, function (RadioStation $station) use ($toRemoveFrequency) {
-            return $station->getFrequency() !== $toRemoveFrequency;
-        });
+    // removes a radio station from the array if the frequency matches
+    public void removeStation(RadioStation toRemove) {
+        float toRemoveFrequency = toRemove.getFrequency();
+        this.stations.removeIf(station -> station.getFrequency() == toRemoveFrequency);
     }
 
-    public function count(): int
-    {
-        return count($this->stations);
+    public int count() {
+        return this.stations.size();
     }
 
-    public function current(): RadioStation
-    {
-        return $this->stations[$this->counter];
+    public RadioStation current() {
+        return this.stations.get(this.counter);
     }
 
-    public function key()
-    {
-        return $this->counter;
+    public int key() {
+        return this.counter;
     }
 
-    public function next()
-    {
-        $this->counter++;
+    public void next() {
+        this.counter++;
     }
 
-    public function rewind()
-    {
-        $this->counter = 0;
+    public void rewind() {
+        this.counter = 0;
     }
 
-    public function valid(): bool
-    {
-        return isset($this->stations[$this->counter]);
+    public boolean valid() {
+        return this.counter < this.stations.size();
+    }
+
+    @Override
+    public Iterator<RadioStation> iterator() {
+        return this.stations.iterator();
     }
 }
 ```
 And then it can be used as
-```php
-$stationList = new StationList();
+```java
+StationList stationList = new StationList();
 
-$stationList->addStation(new RadioStation(89));
-$stationList->addStation(new RadioStation(101));
-$stationList->addStation(new RadioStation(102));
-$stationList->addStation(new RadioStation(103.2));
+stationList.addStation(new RadioStation(89));
+stationList.addStation(new RadioStation(101));
+stationList.addStation(new RadioStation(102));
+stationList.addStation(new RadioStation(103.2));
 
-foreach($stationList as $station) {
-    echo $station->getFrequency() . PHP_EOL;
+for (RadioStation station : stationList) {
+    System.out.println(station.getFrequency());
 }
 
-$stationList->removeStation(new RadioStation(89)); // Will remove station 89
+stationList.removeStation(new RadioStation(89)); // Will remove station 89
 ```
 
 👽 Mediator
