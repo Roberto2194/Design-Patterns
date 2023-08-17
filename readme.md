@@ -1742,66 +1742,56 @@ Wikipedia says
 Translating our example from above. First of all we have our strategy interface and different strategy implementations
 
 ```java
-interface SortStrategy
-{
-    public function sort(array $dataset): array;
+interface SortStrategy {
+    public int[] sort(int[] dataset);
 }
 
-class BubbleSortStrategy implements SortStrategy
-{
-    public function sort(array $dataset): array
-    {
-        echo "Sorting using bubble sort";
+class BubbleSortStrategy implements SortStrategy {
+    public int[] sort(int[] dataset) {
+        System.out.println("Sorting using bubble sort");
 
         // Do sorting
-        return $dataset;
+        return dataset;
     }
 }
 
-class QuickSortStrategy implements SortStrategy
-{
-    public function sort(array $dataset): array
-    {
-        echo "Sorting using quick sort";
+class QuickSortStrategy implements SortStrategy {
+    public int[] sort(int[] dataset) {
+        System.out.println("Sorting using quick sort");
 
         // Do sorting
-        return $dataset;
+        return dataset;
     }
 }
 ```
 And then we have our client that is going to use any strategy
 ```java
-class Sorter
-{
-    protected $sorterSmall;
-    protected $sorterBig;
-
-    public function __construct(SortStrategy $sorterSmall, SortStrategy $sorterBig)
-    {
-        $this->sorterSmall = $sorterSmall;
-        $this->sorterBig = $sorterBig;
+class Sorter {
+    private SortStrategy sorterSmall;
+    private SortStrategy sorterBig;
+    
+    public Sorter(SortStrategy sorterSmall, SortStrategy sorterBig) {
+        this.sorterSmall = sorterSmall;
+        this.sorterBig = sorterBig;
     }
-
-    public function sort(array $dataset): array
-    {
-        if (count($dataset) > 5) {
-            return $this->sorterBig->sort($dataset);
+    
+    public int[] sort(int[] dataset) {
+        if (dataset.length > 5) {
+            return sorterBig.sort(dataset);
         } else {
-            return $this->sorterSmall->sort($dataset);
+            return sorterSmall.sort(dataset);
         }
     }
 }
 ```
 And it can be used as
 ```java
-$smalldataset = [1, 3, 4, 2];
-$bigdataset = [1, 4, 3, 2, 8, 10, 5, 6, 9, 7];
+int[] smalldataset = {1, 3, 4, 2};
+int[] bigdataset = {1, 4, 3, 2, 8, 10, 5, 6, 9, 7};
 
-$sorter = new Sorter(new BubbleSortStrategy(), new QuickSortStrategy());
-
-$sorter->sort($dataset); // Output : Sorting using bubble sort
-
-$sorter->sort($bigdataset); // Output : Sorting using quick sort
+Sorter sorter = new Sorter(new BubbleSortStrategy(), new QuickSortStrategy());
+sorter.sort(smalldataset); // Output: Sorting using bubble sort
+sorter.sort(bigdataset); // Output: Sorting using quick sort
 ```
 
 💢 State
@@ -1822,44 +1812,50 @@ Let's take an example of a phone. First of all we have our state interface and s
 
 ```java
 interface PhoneState {
-    public function pickUp(): PhoneState;
-    public function hangUp(): PhoneState;
-    public function dial(): PhoneState;
+    PhoneState pickUp();
+    PhoneState hangUp();
+    PhoneState dial();
 }
 
 // states implementation
 class PhoneStateIdle implements PhoneState {
-    public function pickUp(): PhoneState {
+    public PhoneState pickUp() {
         return new PhoneStatePickedUp();
     }
-    public function hangUp(): PhoneState {
+
+    public PhoneState hangUp() {
         throw new Exception("already idle");
     }
-    public function dial(): PhoneState {
+
+    public PhoneState dial() {
         throw new Exception("unable to dial in idle state");
     }
 }
 
 class PhoneStatePickedUp implements PhoneState {
-    public function pickUp(): PhoneState {
+    public PhoneState pickUp() {
         throw new Exception("already picked up");
     }
-    public function hangUp(): PhoneState {
+
+    public PhoneState hangUp() {
         return new PhoneStateIdle();
     }
-    public function dial(): PhoneState {
+
+    public PhoneState dial() {
         return new PhoneStateCalling();
     }
 }
 
 class PhoneStateCalling implements PhoneState {
-    public function pickUp(): PhoneState {
+    public PhoneState pickUp() {
         throw new Exception("already picked up");
     }
-    public function hangUp(): PhoneState {
+
+    public PhoneState hangUp() {
         return new PhoneStateIdle();
     }
-    public function dial(): PhoneState {
+
+    public PhoneState dial() {
         throw new Exception("already dialing");
     }
 }
@@ -1867,28 +1863,33 @@ class PhoneStateCalling implements PhoneState {
 Then we have our Phone class that changes the state on different behavior calls
 ```java
 class Phone {
-    private $state;
+    private PhoneState state;
 
-    public function __construct() {
-        $this->state = new PhoneStateIdle();
+    // the phone state is initialized to idle
+    public Phone() {
+        this.state = new PhoneStateIdle();
     }
-    public function pickUp() {
-        $this->state = $this->state->pickUp();
+
+    public void pickUp() {
+        this.state = this.state.pickUp();
     }
-    public function hangUp() {
-        $this->state = $this->state->hangUp();
+
+    public void hangUp() {
+        this.state = this.state.hangUp();
     }
-    public function dial() {
-        $this->state = $this->state->dial();
+
+    public void dial() {
+        this.state = this.state.dial();
     }
 }
 ```
 And then it can be used as follows and it will call the relevant state methods:
 ```java
-$phone = new Phone();
+Phone phone = new Phone();
 
-$phone->pickUp();
-$phone->dial();
+// depending on which function we call, the internal state of phone changes 
+phone.pickUp(); // changes the state to PhoneStatePickedUp
+phone.dial(); // changes the state to PhoneStateCalling
 ```
 
 📒 Template Method
@@ -1915,76 +1916,64 @@ Imagine we have a build tool that helps us test, lint, build, generate build rep
 
 First of all we have our base class that specifies the skeleton for the build algorithm
 ```java
-abstract class Builder
-{
+abstract class Builder {
 
     // Template method
-    final public function build()
-    {
-        $this->test();
-        $this->lint();
-        $this->assemble();
-        $this->deploy();
+    final public void build() {
+        test();
+        lint();
+        assemble();
+        deploy();
     }
 
-    abstract public function test();
-    abstract public function lint();
-    abstract public function assemble();
-    abstract public function deploy();
+    abstract public void test();
+    abstract public void lint();
+    abstract public void assemble();
+    abstract public void deploy();
 }
 ```
 Then we can have our implementations
 ```java
-class AndroidBuilder extends Builder
-{
-    public function test()
-    {
-        echo 'Running android tests';
+class AndroidBuilder extends Builder {
+    public void test() {
+        System.out.println("Running android tests");
     }
 
-    public function lint()
-    {
-        echo 'Linting the android code';
+    public void lint() {
+        System.out.println("Linting the android code");
     }
 
-    public function assemble()
-    {
-        echo 'Assembling the android build';
+    public void assemble() {
+        System.out.println("Assembling the android build");
     }
 
-    public function deploy()
-    {
-        echo 'Deploying android build to server';
+    public void deploy() {
+        System.out.println("Deploying android build to server");
     }
 }
 
-class IosBuilder extends Builder
-{
-    public function test()
-    {
-        echo 'Running ios tests';
+class IosBuilder extends Builder {
+    public void test() {
+        System.out.println("Running ios tests");
     }
 
-    public function lint()
-    {
-        echo 'Linting the ios code';
+    public void lint() {
+        System.out.println("Linting the ios code");
     }
 
-    public function assemble()
-    {
-        echo 'Assembling the ios build';
+    public void assemble() {
+        System.out.println("Assembling the ios build");
     }
 
-    public function deploy()
-    {
-        echo 'Deploying ios build to server';
+    public void deploy() {
+        System.out.println("Deploying ios build to server");
     }
 }
 ```
 And then it can be used as
 ```java
-$androidBuilder = new AndroidBuilder();
-$androidBuilder->build();
+AndroidBuilder androidBuilder = new AndroidBuilder();
+androidBuilder.build();
 
 // Output:
 // Running android tests
@@ -1992,8 +1981,8 @@ $androidBuilder->build();
 // Assembling the android build
 // Deploying android build to server
 
-$iosBuilder = new IosBuilder();
-$iosBuilder->build();
+IosBuilder iosBuilder = new IosBuilder();
+iosBuilder.build();
 
 // Output:
 // Running ios tests
@@ -2001,18 +1990,3 @@ $iosBuilder->build();
 // Assembling the ios build
 // Deploying ios build to server
 ```
-
-## 🚦 Wrap Up Folks
-
-And that about wraps it up. I will continue to improve this, so you might want to watch/star this repository to revisit. Also, I have plans on writing the same about the architectural patterns, stay tuned for it.
-
-## 👬 Contribution
-
-- Report issues
-- Open pull request with improvements
-- Spread the word
-- Reach out with any feedback [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/kamranahmedse.svg?style=social&label=Follow%20%40kamranahmedse)](https://twitter.com/kamranahmedse)
-
-## License
-
-[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
