@@ -323,10 +323,8 @@ Wikipedia says
 
 Having said that let me add a bit about what telescoping constructor anti-pattern is. At one point or the other we have all seen a constructor like below:
 
-```php
-public function __construct($size, $cheese = true, $pepperoni = true, $tomato = false, $lettuce = true)
-{
-}
+```java
+MyClass(int size, boolean cheese, boolean pepperoni, boolean tomato, boolean lettuce) { ... }
 ```
 
 As you can see; the number of constructor parameters can quickly get out of hand and it might become difficult to understand the arrangement of parameters. Plus this parameter list could keep on growing if you would want to add more options in future. This is called telescoping constructor anti-pattern.
@@ -335,82 +333,68 @@ As you can see; the number of constructor parameters can quickly get out of hand
 
 The sane alternative is to use the builder pattern. First of all we have our burger that we want to make
 
-```php
-class Burger
-{
-    protected $size;
-
-    protected $cheese = false;
-    protected $pepperoni = false;
-    protected $lettuce = false;
-    protected $tomato = false;
-
-    public function __construct(BurgerBuilder $builder)
-    {
-        $this->size = $builder->size;
-        $this->cheese = $builder->cheese;
-        $this->pepperoni = $builder->pepperoni;
-        $this->lettuce = $builder->lettuce;
-        $this->tomato = $builder->tomato;
+```java
+class Burger {
+    private int size;
+    private boolean cheese = false;
+    private boolean pepperoni = false;
+    private boolean lettuce = false;
+    private boolean tomato = false;
+    
+    public Burger(BurgerBuilder builder) {
+        this.size = builder.size;
+        this.cheese = builder.cheese;
+        this.pepperoni = builder.pepperoni;
+        this.lettuce = builder.lettuce;
+        this.tomato = builder.tomato;
     }
 }
 ```
-
 And then we have the builder
+```java
+class BurgerBuilder {
+    private int size;
+    private boolean cheese = false;
+    private boolean pepperoni = false;
+    private boolean lettuce = false;
+    private boolean tomato = false;
 
-```php
-class BurgerBuilder
-{
-    public $size;
-
-    public $cheese = false;
-    public $pepperoni = false;
-    public $lettuce = false;
-    public $tomato = false;
-
-    public function __construct(int $size)
-    {
-        $this->size = $size;
+    public BurgerBuilder(int size) {
+        this.size = size;
     }
 
-    public function addPepperoni()
-    {
-        $this->pepperoni = true;
-        return $this;
+    public BurgerBuilder addPepperoni() {
+        this.pepperoni = true;
+        return this;
     }
 
-    public function addLettuce()
-    {
-        $this->lettuce = true;
-        return $this;
+    public BurgerBuilder addLettuce() {
+        this.lettuce = true;
+        return this;
     }
 
-    public function addCheese()
-    {
-        $this->cheese = true;
-        return $this;
+    public BurgerBuilder addCheese() {
+        this.cheese = true;
+        return this;
     }
 
-    public function addTomato()
-    {
-        $this->tomato = true;
-        return $this;
+    public BurgerBuilder addTomato() {
+        this.tomato = true;
+        return this;
     }
 
-    public function build(): Burger
-    {
-        return new Burger($this);
+    public Burger build() {
+        return new Burger(this);
     }
 }
 ```
 And then it can be used as:
-
-```php
-$burger = (new BurgerBuilder(14))
-                    ->addPepperoni()
-                    ->addLettuce()
-                    ->addTomato()
-                    ->build();
+```java
+Burger burger = new BurgerBuilder(14)
+                    .addPepperoni()
+                    .addLettuce()
+                    .addTomato()
+                    .build();
 ```
 
 **When to use?**
@@ -432,55 +416,54 @@ In short, it allows you to create a copy of an existing object and modify it to 
 
 **Programmatic Example**
 
-In PHP, it can be easily done using `clone`
+In Java, it can be easily done using `clone`
 
-```php
-class Sheep
-{
-    protected $name;
-    protected $category;
+```java
+class Sheep {
+    protected String name;
+    protected String category;
 
-    public function __construct(string $name, string $category = 'Mountain Sheep')
-    {
-        $this->name = $name;
-        $this->category = $category;
+    public Sheep(String name, String category) {
+        this.name = name;
+        this.category = category;
     }
 
-    public function setName(string $name)
-    {
-        $this->name = $name;
+    public Sheep(String name) {
+        this.name = name;
+        this.category = "Mountain Sheep";
     }
 
-    public function getName()
-    {
-        return $this->name;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public function setCategory(string $category)
-    {
-        $this->category = $category;
+    public String getName() {
+        return this.name;
     }
 
-    public function getCategory()
-    {
-        return $this->category;
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getCategory() {
+        return this.category;
     }
 }
 ```
 Then it can be cloned like below
-```php
-$original = new Sheep('Jolly');
-echo $original->getName(); // Jolly
-echo $original->getCategory(); // Mountain Sheep
+```java
+Sheep original = new Sheep("Jolly");
+System.out.println(original.getName()); // Jolly
+System.out.println(original.getCategory()); // Mountain Sheep
 
 // Clone and modify what is required
-$cloned = clone $original;
-$cloned->setName('Dolly');
-echo $cloned->getName(); // Dolly
-echo $cloned->getCategory(); // Mountain sheep
+Sheep cloned = original.clone();
+cloned.setName("Dolly");
+System.out.println(cloned.getName()); // Dolly
+System.out.println(cloned.getCategory()); // Mountain sheep
 ```
 
-Also you could use the magic method `__clone` to modify the cloning behavior.
+Also you could use the magic method `clone()` to modify the cloning behavior.
 
 **When to use?**
 
@@ -502,42 +485,28 @@ Singleton pattern is actually considered an anti-pattern and overuse of it shoul
 **Programmatic Example**
 
 To create a singleton, make the constructor private, disable cloning, disable extension and create a static variable to house the instance
-```php
-final class President
-{
-    private static $instance;
+```java
+final class President {
+    private static President instance;
 
-    private function __construct()
-    {
+    private President() {
         // Hide the constructor
     }
 
-    public static function getInstance(): President
-    {
-        if (!self::$instance) {
-            self::$instance = new self();
+    public static President getInstance() {
+        if (Objects.isNull(instance)) {
+            instance = new President();
         }
-
-        return self::$instance;
-    }
-
-    private function __clone()
-    {
-        // Disable cloning
-    }
-
-    private function __wakeup()
-    {
-        // Disable unserialize
+        return instance;
     }
 }
 ```
 Then in order to use
-```php
-$president1 = President::getInstance();
-$president2 = President::getInstance();
+```java
+President president1 = President.getInstance();
+President president2 = President.getInstance();
 
-var_dump($president1 === $president2); // true
+System.out.println(president1 == president2); // true
 ```
 
 Structural Design Patterns
