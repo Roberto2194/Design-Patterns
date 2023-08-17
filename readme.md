@@ -150,15 +150,14 @@ Wikipedia says
  **Programmatic Example**
 
 Taking our hiring manager example above. First of all we have an interviewer interface and some implementations for it
-
 ```java
 interface Interviewer {
-    public void askQuestions();
+    void askQuestions();
 }
 
 class Developer implements Interviewer {
     public void askQuestions() {
-        System.out.println("Asking about design patterns!");
+        System.out.println("Asking about Design Patterns!");
     }
 }
 
@@ -169,7 +168,6 @@ class CommunityExecutive implements Interviewer {
 }
 ```
 Now let us create our `HiringManager`
-
 ```java
 abstract class HiringManager {
     // Factory method
@@ -182,7 +180,6 @@ abstract class HiringManager {
 }
 ```
 Now any child can extend it and provide the required interviewer
-
 ```java
 class DevelopmentManager extends HiringManager {
     private Interviewer makeInterviewer() {
@@ -197,19 +194,13 @@ class MarketingManager extends HiringManager {
 }
 ```
 and then it can be used as
-
 ```java
-public class Main {
-    public static void main(String[] args) {
-        DevelopmentManager devManager = new DevelopmentManager();
-        devManager.takeInterview(); // Output: Asking about design patterns
-        
-        MarketingManager marketingManager = new MarketingManager();
-        marketingManager.takeInterview(); // Output: Asking about community building.
-    }
-}
-```
+DevelopmentManager developmentManager = new DevelopmentManager();
+developmentManager.takeInterview(); // Output: Asking about design patterns
 
+MarketingManager marketingManager = new MarketingManager();
+marketingManager.takeInterview(); // Output: Asking about community building.
+```
 **When to use?**
 
 Useful when there is some generic processing in a class but the required sub-class is dynamically decided at runtime. Or putting it in other words, when the client doesn't know what exact sub-class it might need.
